@@ -27,24 +27,33 @@
 
 ## Milestone 2 — Tier 1 context fusion (calendar, weather, location, motion, time)
 
-- [ ] Integrate EventKit with an opt-in calendar-permission screen.
-- [ ] Import calendar events into the timeline as read-only source events.
-- [ ] Link calendar attendees/locations only when the user opts in.
-- [ ] Add location-consent onboarding and bounded visit capture.
-- [ ] Add WeatherKit snapshots to meaningful events.
-- [ ] Add motion-state attachment (driving, walking, running, cycling, stationary).
-- [ ] Add time semantics (sunrise/sunset/weekend/public-holiday labels).
-- [ ] Add privacy tests for permission denial, revocation, and partial consent states.
+- [x] Integrate EventKit with an opt-in calendar-permission screen.
+- [x] Import calendar events into the timeline as read-only source events.
+- [x] Link calendar attendees/locations only when the user opts in.
+- [x] Add location-consent onboarding and bounded visit capture.
+- [x] Add WeatherKit snapshots to meaningful events.
+- [x] Add motion-state attachment (driving, walking, running, cycling, stationary).
+- [x] Add time semantics (sunrise/sunset/weekend/public-holiday labels).
+- [x] Add privacy tests for permission denial, revocation, and partial consent states.
 
 **Exit condition:** timeline cards merge authorized Tier 1 sources into coherent memory context.
 
+## Milestone 2b — Post-MVP Tier 1 follow-ons
+
+- [x] Add calendar import with explicit opt-in and source-level consent controls.
+- [x] Attach weather snapshots to meaningful events.
+- [x] Establish a location/place-learning foundation for future enrichment.
+- [x] Add motion-context foundation for activity-aware memory cards.
+
 ## Milestone 3 — Tier 1 expansion (HealthKit and photos)
 
-- [ ] Add HealthKit opt-in onboarding with granular metric toggles.
-- [ ] Attach selected health summaries to eligible memory events.
-- [ ] Add photo-linking flow and event-adjacent attachment support.
-- [ ] Add timeline filters for places, interactions, calendar, weather, motion, health, and photos.
-- [ ] Verify source-level disable and data-retention behavior per source.
+- [x] Add HealthKit opt-in onboarding with granular metric toggles.
+- [x] Break onboarding into multiple pages if a single page will be too long. 
+- [x] Add option to resume onboarding in case user mistakenly dispose the onboarding sheet
+- [x] Attach selected health summaries to eligible memory events.
+- [x] Add photo-linking flow and event-adjacent attachment support.
+- [x] Add timeline filters for places, interactions, calendar, weather, motion, health, and photos.
+- [-] Verify source-level disable and data-retention behavior per source.
 
 **Exit condition:** Tier 1 source set is available with clear per-source user control.
 
@@ -92,6 +101,9 @@
 - [ ] Tier 8 car context (CarPlay and supported vehicle APIs).
 - [ ] Tier 9 home-context integrations (locks/lights/thermostats/cameras).
 - [ ] Reliable always-on trip detection after battery/privacy validation.
+- [ ] Access to call logs, SMS history, or third-party notifications.
+- [ ] Continuous background capture before consent and battery strategy are validated.
+- [ ] Automatic silent persistence of uncertain speech extraction.
 - [ ] Family sharing and shared memories.
 - [ ] Team/field-intelligence product.
 - [ ] Paid plans and billing.
