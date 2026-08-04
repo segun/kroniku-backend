@@ -1,0 +1,62 @@
+backend/
+frontend/
+.DS_Store
+
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.Trashes
+
+# Xcode
+# Build products
+build/
+DerivedData/
+*.xcarchive
+
+# Workspace and user data
+*.xcworkspace
+xcuserdata/
+*.xcuserdatad
+*.xcuserstate
+
+# Xcode project temporary files
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+xcdebugger/
+
+# Swift Package Manager
+.build/
+Package.resolved
+.swiftpm/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Misc
+*.swp
+*.lock
+*.log
+*.tmp
+.env
+.env.*
+.vscode/
+.idea/
+
+# macOS Finder attributes
+._*
