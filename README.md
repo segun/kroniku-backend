@@ -1,47 +1,112 @@
-# Kroniku
+# Kroniku backend (Milestone 5)
 
-Kroniku is a private, native mobile memory system for the real world. It fuses operating-system signals into coherent memories users can search, review, and trust.
+NestJS + MySQL backend for sync, authentication, search, and account lifecycle.
 
-The product is organized around memory sources rather than one-off features. The first execution priority is high-value, low-friction sources like location, calendar, weather, time semantics, motion, health context, and photos.
+Concrete request/response examples for client integration live in [../docs/backend-api-contract.md](../docs/backend-api-contract.md).
 
-Kroniku's ambition is larger than a timeline app: build a searchable digital autobiography with explicit user consent at every step.
+## Stack
 
-## Product promise
+- NestJS 11
+- TypeORM 0.3
+- MySQL 8+
+- JWT auth (account + device-bound sessions)
 
-**Your life, remembered—on your terms.**
+## Local setup
 
-Kroniku turns events into private Context Cards, where each card combines place, time, activity, people, and evidence. A user should be able to ask or search for things such as:
+1. Install dependencies:
 
-- “When did I last visit Eko Hotel?”
-- “Which day did it rain during that meeting?”
-- “When did I meet Mr. Fola?”
-- “What happened before and after that call?”
-
-## Why native
-
-Kroniku is built natively in Swift and Kotlin to access platform capabilities deeply, handle permissions correctly, and deliver reliable on-device behavior.
-
-## Source tiers
-
-- Tier 1: location, calendar, weather, time semantics, motion, HealthKit, photos.
-- Tier 2: voice notes, notes sharing, contacts, bluetooth context.
-- Tier 3+: finance, communication integrations, documents, travel, watch, car, and home context.
-
-## Privacy principles
-
-- No call-log, SMS, dialer, or message-history access.
-- Contact interactions come from user-entered text, voice capture, or explicit user-approved integrations.
-- Request only the permissions needed for a feature.
-- Prefer on-device processing and local storage; cloud sync is opt-in.
-- Use AI for high-value retrieval and summaries, never to process every raw event.
-
-## Repository layout
-
-```text
-backend/            API, sync, authentication, and shared services
-frontend/
-  ios/              Native SwiftUI iOS application
-  android/          Native Kotlin/Jetpack Compose Android application
+```bash
+yarn install
 ```
 
-See [SPEC.md](SPEC.md) for the product and technical specification, and [TODO.md](TODO.md) for the delivery plan.
+2. Create environment file:
+
+```bash
+cp .env.example .env
+```
+
+3. Start MySQL and create the database from `.env` (default: `kroniku`).
+
+4. Run in dev mode:
+
+```bash
+yarn start:dev
+```
+
+Health check:
+
+```bash
+GET /
+```
+
+## Sync and encryption contract
+
+Server accepts event payloads as opaque ciphertext and never attempts to decrypt them.
+
+### Required event fields for sync push
+
+- `eventId`: stable client event identifier
+- `version`: monotonic integer version per event
+- `encryptedPayload`: client-side encrypted event payload blob
+- `payloadHash`: deterministic hash of encrypted payload used for conflict detection
+
+### Optional searchable projection
+
+To support keyword retrieval while keeping source payload encrypted, client may send a reduced text projection:
+
+- `searchText`
+- `title`
+- `detail`
+- `source`
+
+This projection is user-controlled and can be minimized or omitted.
+
+### Conflict handling
+
+- If incoming `version` is greater than server version: apply update.
+- If equal version and different `payloadHash`: record `same_version_conflict` and keep server copy.
+- If lower version: record `ignored_stale`.
+
+## API summary
+
+### Auth
+
+- `POST /auth/provider`
+
+The endpoint accepts a verified Google or Apple OpenID Connect ID token, links or creates the account, upserts device metadata, and returns a JWT. Password authentication is not supported.
+
+### Sync
+
+- `POST /sync/push` (JWT required)
+- `GET /sync/pull?since=ISO_DATE` (JWT required)
+
+### Search
+
+- `POST /search/keyword` (JWT required)
+- `POST /search/natural` (JWT required, retrieval opt-in required)
+
+Natural search uses retrieval-first full-text ranking over projected text fields with a keyword-overlap fallback.
+
+### Account lifecycle
+
+- `PATCH /account/retrieval-opt-in`
+- `GET /account/export`
+- `DELETE /account`
+
+## Notes
+
+- `DB_SYNC=false` is the default and should stay off when migrations are available.
+- For production, disable schema sync and use migrations.
+- Use a strong `JWT_SECRET` in non-dev environments.
+
+## OpenAPI
+
+Generate machine-readable OpenAPI from controllers:
+
+```bash
+yarn openapi:generate
+```
+
+Generated artifact:
+
+- `../docs/openapi.json`
