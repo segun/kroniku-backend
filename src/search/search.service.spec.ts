@@ -19,6 +19,7 @@ function makeEvent(overrides: Partial<SyncEvent>): SyncEvent {
     title: 'Untitled',
     detail: null,
     searchText: null,
+    contextData: null,
     encryptedPayload: 'ciphertext',
     payloadHash: 'hash',
     isDeleted: false,

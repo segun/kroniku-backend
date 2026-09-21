@@ -1,5 +1,6 @@
 import { Device } from '../../devices/entities/device.entity';
 import { User } from '../../users/entities/user.entity';
+import type { SyncEventContextDto } from '../../sync/dto/push-sync.dto';
 export declare class SyncEvent {
     id: string;
     userId: string;
@@ -13,6 +14,7 @@ export declare class SyncEvent {
     title: string | null;
     detail: string | null;
     searchText: string | null;
+    contextData: SyncEventContextDto | null;
     encryptedPayload: string;
     payloadHash: string;
     isDeleted: boolean;

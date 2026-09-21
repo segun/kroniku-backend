@@ -14,14 +14,17 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("../users/users.service");
 const devices_service_1 = require("../devices/devices.service");
 const events_service_1 = require("../events/events.service");
+const preferences_service_1 = require("../preferences/preferences.service");
 let AccountService = class AccountService {
     usersService;
     devicesService;
     eventsService;
-    constructor(usersService, devicesService, eventsService) {
+    preferencesService;
+    constructor(usersService, devicesService, eventsService, preferencesService) {
         this.usersService = usersService;
         this.devicesService = devicesService;
         this.eventsService = eventsService;
+        this.preferencesService = preferencesService;
     }
     async setRetrievalOptIn(user, enabled) {
         const updated = await this.usersService.setRetrievalOptIn(user.userId, enabled);
@@ -39,9 +42,10 @@ let AccountService = class AccountService {
         if (!account) {
             throw new common_1.NotFoundException('Account not found');
         }
-        const [devices, events] = await Promise.all([
+        const [devices, events, preferences] = await Promise.all([
             this.devicesService.findByUserId(user.userId),
             this.eventsService.findAllForUser(user.userId),
+            this.preferencesService.getPreferences(user),
         ]);
         return {
             exportedAt: new Date().toISOString(),
@@ -51,6 +55,7 @@ let AccountService = class AccountService {
                 retrievalOptIn: account.retrievalOptIn,
                 createdAt: account.createdAt,
             },
+            preferences,
             devices,
             events,
         };
@@ -72,6 +77,7 @@ exports.AccountService = AccountService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService,
         devices_service_1.DevicesService,
-        events_service_1.EventsService])
+        events_service_1.EventsService,
+        preferences_service_1.PreferencesService])
 ], AccountService);
 //# sourceMappingURL=account.service.js.map

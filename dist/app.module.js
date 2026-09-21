@@ -25,6 +25,8 @@ const device_entity_1 = require("./devices/entities/device.entity");
 const sync_event_entity_1 = require("./events/entities/sync-event.entity");
 const sync_conflict_entity_1 = require("./events/entities/sync-conflict.entity");
 const auth_identity_entity_1 = require("./auth/entities/auth-identity.entity");
+const user_preferences_entity_1 = require("./preferences/entities/user-preferences.entity");
+const preferences_module_1 = require("./preferences/preferences.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -41,8 +43,13 @@ exports.AppModule = AppModule = __decorate([
                     username: configService.get('MYSQL_USER', 'root'),
                     password: configService.get('MYSQL_PASSWORD', ''),
                     database: configService.get('MYSQL_DATABASE', 'kroniku'),
-                    entities: [user_entity_1.User, device_entity_1.Device, sync_event_entity_1.SyncEvent, sync_conflict_entity_1.SyncConflict, auth_identity_entity_1.AuthIdentity],
+                    entities: [user_entity_1.User, device_entity_1.Device, sync_event_entity_1.SyncEvent, sync_conflict_entity_1.SyncConflict, auth_identity_entity_1.AuthIdentity, user_preferences_entity_1.UserPreferences],
                     synchronize: configService.get('DB_SYNC', 'false') === 'true',
+                    logging: configService
+                        .get('DB_LOGGING', 'error,warn')
+                        .split(',')
+                        .map((level) => level.trim())
+                        .filter((level) => ['query', 'schema', 'error', 'warn', 'info', 'log', 'migration'].includes(level)),
                 }),
             }),
             common_module_1.CommonModule,
@@ -53,6 +60,7 @@ exports.AppModule = AppModule = __decorate([
             search_module_1.SearchModule,
             account_module_1.AccountModule,
             events_module_1.EventsModule,
+            preferences_module_1.PreferencesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

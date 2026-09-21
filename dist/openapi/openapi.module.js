@@ -21,6 +21,8 @@ const sync_controller_1 = require("../sync/sync.controller");
 const sync_service_1 = require("../sync/sync.service");
 const users_service_1 = require("../users/users.service");
 const devices_service_1 = require("../devices/devices.service");
+const preferences_controller_1 = require("../preferences/preferences.controller");
+const preferences_service_1 = require("../preferences/preferences.service");
 let OpenApiModule = class OpenApiModule {
 };
 exports.OpenApiModule = OpenApiModule;
@@ -32,6 +34,7 @@ exports.OpenApiModule = OpenApiModule = __decorate([
             sync_controller_1.SyncController,
             search_controller_1.SearchController,
             account_controller_1.AccountController,
+            preferences_controller_1.PreferencesController,
         ],
         providers: [
             app_service_1.AppService,
@@ -42,6 +45,7 @@ exports.OpenApiModule = OpenApiModule = __decorate([
             { provide: users_service_1.UsersService, useValue: {} },
             { provide: devices_service_1.DevicesService, useValue: {} },
             { provide: events_service_1.EventsService, useValue: {} },
+            { provide: preferences_service_1.PreferencesService, useValue: {} },
         ],
     })
 ], OpenApiModule);

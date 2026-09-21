@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Device } from '../../devices/entities/device.entity';
 import { User } from '../../users/entities/user.entity';
+import type { SyncEventContextDto } from '../../sync/dto/push-sync.dto';
 
 @Entity({ name: 'sync_events' })
 @Unique(['userId', 'eventId'])
@@ -46,7 +47,7 @@ export class SyncEvent {
   @Column({ type: 'varchar', length: 80, nullable: true })
   source!: string | null;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'text', nullable: true })
   title!: string | null;
 
   @Column({ type: 'text', nullable: true })
@@ -54,6 +55,9 @@ export class SyncEvent {
 
   @Column({ type: 'text', nullable: true })
   searchText!: string | null;
+
+  @Column({ type: 'json', nullable: true })
+  contextData!: SyncEventContextDto | null;
 
   @Column({ type: 'text' })
   encryptedPayload!: string;

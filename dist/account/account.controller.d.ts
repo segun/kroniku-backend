@@ -17,6 +17,17 @@ export declare class AccountController {
             retrievalOptIn: boolean;
             createdAt: Date;
         };
+        preferences: {
+            schemaVersion: number;
+            dayPeriods: {
+                morningStartMinutes: number;
+                afternoonStartMinutes: number;
+                earlyEveningStartMinutes: number;
+                nightStartMinutes: number;
+            };
+            timezoneIdentifier: string | null;
+            updatedAt: Date;
+        };
         devices: import("../devices/entities/device.entity").Device[];
         events: import("../events/entities/sync-event.entity").SyncEvent[];
     }>;

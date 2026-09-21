@@ -33,6 +33,33 @@ cp .env.example .env
 yarn start:dev
 ```
 
+## Logs
+
+The backend logs every HTTP request with an `x-request-id`, method, URL, status code, client IP, user agent, and duration. Exceptions include the request ID and stack trace. Request bodies, authorization headers, JWTs, passwords, and encrypted event payloads are intentionally not logged.
+
+For foreground development, logs appear in the terminal. With PM2:
+
+```bash
+yarn pm2:start
+pm2 logs kroniku-backend
+```
+
+PM2 files are written to:
+
+- `logs/kroniku-out.log`
+- `logs/kroniku-error.log`
+
+Environment controls:
+
+- `LOG_LEVEL=log|error|warn|debug|verbose`
+- `DB_LOGGING=error,warn` by default; add `query` only temporarily while debugging SQL
+
+Every response includes the correlation header:
+
+```text
+x-request-id: <request-id>
+```
+
 Health check:
 
 ```bash

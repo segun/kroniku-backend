@@ -187,7 +187,7 @@ describe('HTTP contract (e2e)', () => {
             version: 3,
             occurredAt: '2026-08-05T10:15:00.000Z',
             source: 'voice',
-            title: 'Met Mr. Fola',
+            title: `Memory event ${'with a detailed context '.repeat(20)}`,
             detail: 'Recorded a follow-up note after the meeting.',
             searchText: 'met mr fola follow up note victoria island',
             encryptedPayload: 'base64-or-jwe-ciphertext',

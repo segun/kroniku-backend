@@ -2,7 +2,11 @@ import {
   IsArray,
   IsBoolean,
   IsDateString,
+  IsIn,
   IsInt,
+  IsLatitude,
+  IsLongitude,
+  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -10,6 +14,76 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+
+export class SyncPlaceDto {
+  @IsString()
+  @MaxLength(255)
+  name!: string;
+
+  @IsOptional()
+  @IsLatitude()
+  latitude?: number;
+
+  @IsOptional()
+  @IsLongitude()
+  longitude?: number;
+}
+
+export class SyncWeatherDto {
+  @IsDateString()
+  observedAt!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  condition?: string;
+
+  @IsOptional()
+  @IsNumber()
+  temperatureC?: number;
+}
+
+export class SyncPhotoReferenceDto {
+  @IsString()
+  @MaxLength(255)
+  assetIdentifier!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  filename?: string;
+
+  @IsDateString()
+  addedAt!: string;
+}
+
+export class SyncEventContextDto {
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SyncPlaceDto)
+  place?: SyncPlaceDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SyncWeatherDto)
+  weather?: SyncWeatherDto;
+
+  @IsOptional()
+  @IsIn(['driving', 'walking', 'running', 'cycling', 'stationary'])
+  motion?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @MaxLength(80, { each: true })
+  timeSemantics?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SyncPhotoReferenceDto)
+  photoReferences?: SyncPhotoReferenceDto[];
+}
 
 export class PushSyncEventDto {
   @IsString()
@@ -31,7 +105,6 @@ export class PushSyncEventDto {
 
   @IsOptional()
   @IsString()
-  @MaxLength(255)
   title?: string;
 
   @IsOptional()
@@ -41,6 +114,11 @@ export class PushSyncEventDto {
   @IsOptional()
   @IsString()
   searchText?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SyncEventContextDto)
+  contextData?: SyncEventContextDto;
 
   @IsString()
   encryptedPayload!: string;

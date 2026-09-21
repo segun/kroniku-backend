@@ -44,6 +44,7 @@ let EventsService = class EventsService {
                     title: incoming.title ?? null,
                     detail: incoming.detail ?? null,
                     searchText: incoming.searchText ?? null,
+                    contextData: incoming.contextData ?? null,
                     encryptedPayload: incoming.encryptedPayload,
                     payloadHash: incoming.payloadHash,
                     isDeleted: incoming.isDeleted ?? false,
@@ -60,6 +61,7 @@ let EventsService = class EventsService {
                 existing.title = incoming.title ?? existing.title;
                 existing.detail = incoming.detail ?? existing.detail;
                 existing.searchText = incoming.searchText ?? existing.searchText;
+                existing.contextData = incoming.contextData ?? existing.contextData;
                 existing.encryptedPayload = incoming.encryptedPayload;
                 existing.payloadHash = incoming.payloadHash;
                 existing.isDeleted = incoming.isDeleted ?? existing.isDeleted;
@@ -142,6 +144,7 @@ let EventsService = class EventsService {
 			  title,
 			  detail,
 			  searchText,
+			  contextData,
 			  encryptedPayload,
 			  payloadHash,
 			  isDeleted,
@@ -167,6 +170,7 @@ let EventsService = class EventsService {
                 title: row.title ?? null,
                 detail: row.detail ?? null,
                 searchText: row.searchText ?? null,
+                contextData: row.contextData ?? null,
                 encryptedPayload: row.encryptedPayload,
                 payloadHash: row.payloadHash,
                 isDeleted: Boolean(row.isDeleted),

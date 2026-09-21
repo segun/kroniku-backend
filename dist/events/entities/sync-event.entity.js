@@ -26,6 +26,7 @@ let SyncEvent = class SyncEvent {
     title;
     detail;
     searchText;
+    contextData;
     encryptedPayload;
     payloadHash;
     isDeleted;
@@ -74,7 +75,7 @@ __decorate([
     __metadata("design:type", Object)
 ], SyncEvent.prototype, "source", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 255, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", Object)
 ], SyncEvent.prototype, "title", void 0);
 __decorate([
@@ -85,6 +86,10 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", Object)
 ], SyncEvent.prototype, "searchText", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], SyncEvent.prototype, "contextData", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'text' }),
     __metadata("design:type", String)

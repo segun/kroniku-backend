@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import { DevicesService } from '../devices/devices.service';
 import { EventsService } from '../events/events.service';
 import type { RequestUser } from '../common/interfaces/request-user.interface';
+import { PreferencesService } from '../preferences/preferences.service';
 
 @Injectable()
 export class AccountService {
@@ -10,6 +11,7 @@ export class AccountService {
 		private readonly usersService: UsersService,
 		private readonly devicesService: DevicesService,
 		private readonly eventsService: EventsService,
+		private readonly preferencesService: PreferencesService,
 	) {}
 
 	async setRetrievalOptIn(user: RequestUser, enabled: boolean) {
@@ -30,9 +32,10 @@ export class AccountService {
 			throw new NotFoundException('Account not found');
 		}
 
-		const [devices, events] = await Promise.all([
+		const [devices, events, preferences] = await Promise.all([
 			this.devicesService.findByUserId(user.userId),
 			this.eventsService.findAllForUser(user.userId),
+			this.preferencesService.getPreferences(user),
 		]);
 
 		return {
@@ -43,6 +46,7 @@ export class AccountService {
 				retrievalOptIn: account.retrievalOptIn,
 				createdAt: account.createdAt,
 			},
+			preferences,
 			devices,
 			events,
 		};

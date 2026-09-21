@@ -12,6 +12,8 @@ import { SyncController } from '../sync/sync.controller';
 import { SyncService } from '../sync/sync.service';
 import { UsersService } from '../users/users.service';
 import { DevicesService } from '../devices/devices.service';
+import { PreferencesController } from '../preferences/preferences.controller';
+import { PreferencesService } from '../preferences/preferences.service';
 
 @Module({
   controllers: [
@@ -20,6 +22,7 @@ import { DevicesService } from '../devices/devices.service';
     SyncController,
     SearchController,
     AccountController,
+    PreferencesController,
   ],
   providers: [
     AppService,
@@ -30,6 +33,7 @@ import { DevicesService } from '../devices/devices.service';
     { provide: UsersService, useValue: {} },
     { provide: DevicesService, useValue: {} },
     { provide: EventsService, useValue: {} },
+    { provide: PreferencesService, useValue: {} },
   ],
 })
 export class OpenApiModule {}

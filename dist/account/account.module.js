@@ -13,12 +13,13 @@ const account_service_1 = require("./account.service");
 const users_module_1 = require("../users/users.module");
 const devices_module_1 = require("../devices/devices.module");
 const events_module_1 = require("../events/events.module");
+const preferences_module_1 = require("../preferences/preferences.module");
 let AccountModule = class AccountModule {
 };
 exports.AccountModule = AccountModule;
 exports.AccountModule = AccountModule = __decorate([
     (0, common_1.Module)({
-        imports: [users_module_1.UsersModule, devices_module_1.DevicesModule, events_module_1.EventsModule],
+        imports: [users_module_1.UsersModule, devices_module_1.DevicesModule, events_module_1.EventsModule, preferences_module_1.PreferencesModule],
         controllers: [account_controller_1.AccountController],
         providers: [account_service_1.AccountService],
     })
