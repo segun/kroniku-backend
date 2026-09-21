@@ -83,6 +83,18 @@ export class SyncEventContextDto {
   @ValidateNested({ each: true })
   @Type(() => SyncPhotoReferenceDto)
   photoReferences?: SyncPhotoReferenceDto[];
+
+  // Free-form moment: zero or more linked contact names/identifiers.
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @MaxLength(160, { each: true })
+  contacts?: string[];
+
+  // Free-form moment: optional end of a start/end time range.
+  @IsOptional()
+  @IsDateString()
+  endedAt?: string;
 }
 
 export class PushSyncEventDto {
