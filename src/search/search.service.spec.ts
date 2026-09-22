@@ -83,4 +83,39 @@ describe('search ranking helpers', () => {
     expect(ranked[0]?.event.id).toBe('older-call');
     expect(ranked[0]?.score).toBeGreaterThan(ranked[1]?.score ?? 0);
   });
+
+  it('excludes events that omit a named person even when a generic word like "meeting" matches', () => {
+    const query = 'When did I have a meeting with Ademola';
+    const terms = tokenizeNaturalQuery(query);
+    const referenceDate = new Date('2026-09-22T12:00:00.000Z');
+
+    const ranked = rerankNaturalResults(
+      [
+        {
+          event: makeEvent({
+            id: 'meeting-with-ademola',
+            title: 'Meeting',
+            detail: 'Ademola',
+            occurredAt: new Date('2026-09-10T12:00:00.000Z'),
+          }),
+          score: 1,
+        },
+        {
+          event: makeEvent({
+            id: 'meeting-with-someone-else',
+            title: 'Meeting',
+            detail: 'Chidi',
+            occurredAt: new Date('2026-09-15T12:00:00.000Z'),
+          }),
+          score: 1,
+        },
+      ],
+      query,
+      terms,
+      referenceDate,
+    );
+
+    expect(ranked).toHaveLength(1);
+    expect(ranked[0]?.event.id).toBe('meeting-with-ademola');
+  });
 });

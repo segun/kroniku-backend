@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { EventsService } from '../events/events.service';
 import { SyncEvent } from '../events/entities/sync-event.entity';
 import { UsersService } from '../users/users.service';
@@ -19,6 +19,18 @@ const TERM_SYNONYMS: Record<string, string[]> = {
 	hotel: ['stay', 'lodging'],
 };
 
+// Function words that carry little discriminating power and shouldn't drive relevance on their own.
+const STOPWORDS = new Set([
+	'a', 'an', 'the', 'is', 'are', 'was', 'were', 'am', 'be', 'been', 'being',
+	'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'my', 'your', 'his', 'her', 'its', 'our', 'their',
+	'this', 'that', 'these', 'those',
+	'do', 'does', 'did', 'doing',
+	'have', 'has', 'had', 'having',
+	'will', 'would', 'shall', 'should', 'can', 'could', 'may', 'might', 'must',
+	'when', 'where', 'why', 'how', 'what', 'who', 'whom', 'which',
+	'with', 'at', 'in', 'on', 'for', 'to', 'of', 'about', 'from', 'by', 'as', 'and', 'or', 'but', 'if', 'so', 'than',
+]);
+
 export interface RankedSearchResult {
 	event: SyncEvent;
 	score: number;
@@ -32,6 +44,31 @@ export function tokenizeNaturalQuery(query: string): string[] {
 		.map((term) => term.trim())
 		.filter((term) => term.length > 1)
 		.slice(0, 8);
+}
+
+/**
+ * Pulls out capitalized words other than the sentence-initial word. These are most often proper
+ * nouns (person/place names) and should hard-filter results, since generic content-word overlap
+ * (e.g. "meeting") is far too weak a signal on its own to satisfy a query naming a specific person.
+ */
+export function extractProperNounTerms(query: string): string[] {
+	const words = query.trim().split(/\s+/).filter(Boolean);
+	const nouns = new Set<string>();
+
+	words.forEach((word, index) => {
+		if (index === 0) {
+			return;
+		}
+		const cleaned = word.replace(/[^A-Za-z'-]/g, '');
+		if (cleaned.length < 2) {
+			return;
+		}
+		if (/^[A-Z][a-z'-]*$/.test(cleaned)) {
+			nouns.add(cleaned.toLowerCase());
+		}
+	});
+
+	return Array.from(nouns);
 }
 
 export function expandNaturalTerms(terms: string[]): string[] {
@@ -60,6 +97,8 @@ export function rerankNaturalResults(
 ): RankedSearchResult[] {
 	const expandedTerms = expandNaturalTerms(terms);
 	const normalizedQuery = query.toLowerCase().trim();
+	const contentTerms = terms.filter((term) => !STOPWORDS.has(term));
+	const properNouns = extractProperNounTerms(query);
 
 	return results
 		.map((entry) => {
@@ -69,14 +108,14 @@ export function rerankNaturalResults(
 				.toLowerCase();
 
 			let lexicalBoost = 0;
-			for (const term of terms) {
+			for (const term of contentTerms) {
 				if (corpus.includes(term)) {
 					lexicalBoost += 1.5;
 				}
 			}
 
 			for (const term of expandedTerms) {
-				if (!terms.includes(term) && corpus.includes(term)) {
+				if (!contentTerms.includes(term) && corpus.includes(term)) {
 					lexicalBoost += 0.5;
 				}
 			}
@@ -85,14 +124,19 @@ export function rerankNaturalResults(
 				lexicalBoost += 3;
 			}
 
+			const matchesAllProperNouns = properNouns.every((noun) => corpus.includes(noun));
+
 			const recencyBoost = Math.max(0, 2 - ageInDays(entry.event.occurredAt, referenceDate) / 30);
 			return {
 				...entry,
 				score: entry.score + lexicalBoost + recencyBoost,
+				matchesAllProperNouns,
 			};
 		})
+		.filter((entry) => entry.matchesAllProperNouns)
 		.sort((a, b) => b.score - a.score)
-		.filter((entry) => entry.score > 0);
+		.filter((entry) => entry.score > 0)
+		.map(({ matchesAllProperNouns: _matchesAllProperNouns, ...entry }) => entry);
 }
 
 @Injectable()
@@ -103,15 +147,24 @@ export class SearchService {
 	) {}
 
 	async keyword(user: RequestUser, dto: KeywordSearchDto) {
+		const query = dto.query?.trim();
+		const source = dto.source?.trim();
+
+		if (!query && !source) {
+			throw new BadRequestException('Provide a keyword or a source to search by');
+		}
+
 		const results = await this.eventsService.searchKeyword(
 			user.userId,
-			dto.query.trim(),
+			query,
 			dto.limit ?? 20,
+			source,
 		);
 
 		return {
 			mode: 'keyword',
-			query: dto.query,
+			query: dto.query ?? '',
+			source: dto.source,
 			count: results.length,
 			results,
 		};

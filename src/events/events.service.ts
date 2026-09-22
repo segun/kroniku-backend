@@ -134,17 +134,26 @@ export class EventsService {
 		});
 	}
 
-	searchKeyword(userId: string, query: string, limit = 20): Promise<SyncEvent[]> {
-		const likeQuery = `%${query.toLowerCase()}%`;
+	searchKeyword(userId: string, query?: string, limit = 20, source?: string): Promise<SyncEvent[]> {
+		const trimmedQuery = query?.trim();
 
-		return this.eventsRepository
+		const builder = this.eventsRepository
 			.createQueryBuilder('event')
 			.where('event.userId = :userId', { userId })
-			.andWhere('event.isDeleted = false')
-			.andWhere(
+			.andWhere('event.isDeleted = false');
+
+		if (trimmedQuery) {
+			builder.andWhere(
 				"(LOWER(COALESCE(event.title, '')) LIKE :query OR LOWER(COALESCE(event.detail, '')) LIKE :query OR LOWER(COALESCE(event.searchText, '')) LIKE :query OR LOWER(COALESCE(event.source, '')) LIKE :query)",
-				{ query: likeQuery },
-			)
+				{ query: `%${trimmedQuery.toLowerCase()}%` },
+			);
+		}
+
+		if (source) {
+			builder.andWhere('event.source = :source', { source });
+		}
+
+		return builder
 			.orderBy('event.occurredAt', 'DESC')
 			.addOrderBy('event.updatedAt', 'DESC')
 			.limit(limit)

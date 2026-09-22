@@ -91,6 +91,11 @@ export class SyncEventContextDto {
   @MaxLength(160, { each: true })
   contacts?: string[];
 
+  @IsOptional()
+  @IsString()
+  @MaxLength(4000)
+  userNote?: string;
+
   // Free-form moment: optional end of a start/end time range.
   @IsOptional()
   @IsDateString()
