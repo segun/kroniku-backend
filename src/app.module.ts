@@ -19,6 +19,8 @@ import { SyncConflict } from './events/entities/sync-conflict.entity';
 import { AuthIdentity } from './auth/entities/auth-identity.entity';
 import { UserPreferences } from './preferences/entities/user-preferences.entity';
 import { PreferencesModule } from './preferences/preferences.module';
+import { NamedPlace } from './places/entities/named-place.entity';
+import { PlacesModule } from './places/places.module';
 
 @Module({
   imports: [
@@ -32,7 +34,10 @@ import { PreferencesModule } from './preferences/preferences.module';
         username: configService.get<string>('MYSQL_USER', 'root'),
         password: configService.get<string>('MYSQL_PASSWORD', ''),
         database: configService.get<string>('MYSQL_DATABASE', 'kroniku'),
-        entities: [User, Device, SyncEvent, SyncConflict, AuthIdentity, UserPreferences],
+        // Without this, mysql2 reads/writes `datetime` columns using the Node process's local
+        // system timezone instead of UTC, silently shifting every timestamp by that offset.
+        timezone: 'Z',
+        entities: [User, Device, SyncEvent, SyncConflict, AuthIdentity, UserPreferences, NamedPlace],
         synchronize: configService.get<string>('DB_SYNC', 'false') === 'true',
         logging: configService
           .get<string>('DB_LOGGING', 'error,warn')
@@ -52,6 +57,7 @@ import { PreferencesModule } from './preferences/preferences.module';
     AccountModule,
     EventsModule,
     PreferencesModule,
+    PlacesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

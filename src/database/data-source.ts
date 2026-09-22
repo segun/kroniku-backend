@@ -15,6 +15,9 @@ export default new DataSource({
   username: process.env.MYSQL_USER ?? 'kroniku',
   password: process.env.MYSQL_PASSWORD ?? 'kroniku',
   database: process.env.MYSQL_DATABASE ?? 'kroniku',
+  // Keep in sync with app.module.ts's datasource config — without this, mysql2 reads/writes
+  // `datetime` columns using the local system timezone instead of UTC.
+  timezone: 'Z',
   entities: [User, Device, SyncEvent, SyncConflict, AuthIdentity],
   migrations: ['src/database/migrations/*{.ts,.js}'],
   synchronize: false,
