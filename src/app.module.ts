@@ -19,8 +19,6 @@ import { SyncConflict } from './events/entities/sync-conflict.entity';
 import { AuthIdentity } from './auth/entities/auth-identity.entity';
 import { UserPreferences } from './preferences/entities/user-preferences.entity';
 import { PreferencesModule } from './preferences/preferences.module';
-import { NamedPlace } from './places/entities/named-place.entity';
-import { PlacesModule } from './places/places.module';
 
 @Module({
   imports: [
@@ -37,7 +35,7 @@ import { PlacesModule } from './places/places.module';
         // Without this, mysql2 reads/writes `datetime` columns using the Node process's local
         // system timezone instead of UTC, silently shifting every timestamp by that offset.
         timezone: 'Z',
-        entities: [User, Device, SyncEvent, SyncConflict, AuthIdentity, UserPreferences, NamedPlace],
+        entities: [User, Device, SyncEvent, SyncConflict, AuthIdentity, UserPreferences],
         synchronize: configService.get<string>('DB_SYNC', 'false') === 'true',
         logging: configService
           .get<string>('DB_LOGGING', 'error,warn')
@@ -57,7 +55,6 @@ import { PlacesModule } from './places/places.module';
     AccountModule,
     EventsModule,
     PreferencesModule,
-    PlacesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

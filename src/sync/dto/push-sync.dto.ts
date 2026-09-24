@@ -57,6 +57,31 @@ export class SyncPhotoReferenceDto {
   addedAt!: string;
 }
 
+export class SyncHealthEntryDto {
+  @IsString()
+  @MaxLength(40)
+  metric!: string;
+
+  @IsString()
+  @MaxLength(120)
+  value!: string;
+}
+
+export class SyncGeoCoordinateDto {
+  @IsLatitude()
+  latitude!: number;
+
+  @IsLongitude()
+  longitude!: number;
+}
+
+export class SyncWorkoutRouteDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SyncGeoCoordinateDto)
+  coordinates!: SyncGeoCoordinateDto[];
+}
+
 export class SyncEventContextDto {
   @IsOptional()
   @ValidateNested()
@@ -69,8 +94,12 @@ export class SyncEventContextDto {
   weather?: SyncWeatherDto;
 
   @IsOptional()
-  @IsIn(['driving', 'walking', 'running', 'cycling', 'stationary'])
+  @IsIn(['driving', 'walking', 'running', 'cycling', 'stationary', 'unknown'])
   motion?: string;
+
+  @IsOptional()
+  @IsIn(['car', 'headphones', 'speaker'])
+  bluetoothContext?: string;
 
   @IsOptional()
   @IsArray()
@@ -100,6 +129,28 @@ export class SyncEventContextDto {
   @IsOptional()
   @IsDateString()
   endedAt?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SyncHealthEntryDto)
+  healthSummary?: SyncHealthEntryDto[];
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  distanceMeters?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SyncWorkoutRouteDto)
+  workoutRoute?: SyncWorkoutRouteDto;
+
+  // Stable EventKit identifier for calendar-sourced events; lets other devices reconcile the same occurrence.
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  externalSourceID?: string;
 }
 
 export class PushSyncEventDto {
