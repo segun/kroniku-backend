@@ -82,6 +82,27 @@ export class SyncWorkoutRouteDto {
   coordinates!: SyncGeoCoordinateDto[];
 }
 
+export class SyncMediaNowPlayingDto {
+  @IsString()
+  @MaxLength(400)
+  title!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  artist?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  albumTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  source?: string;
+}
+
 export class SyncEventContextDto {
   @IsOptional()
   @ValidateNested()
@@ -131,6 +152,10 @@ export class SyncEventContextDto {
   endedAt?: string;
 
   @IsOptional()
+  @IsBoolean()
+  includeHealthData?: boolean;
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SyncHealthEntryDto)
@@ -145,6 +170,11 @@ export class SyncEventContextDto {
   @ValidateNested()
   @Type(() => SyncWorkoutRouteDto)
   workoutRoute?: SyncWorkoutRouteDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SyncMediaNowPlayingDto)
+  mediaNowPlaying?: SyncMediaNowPlayingDto;
 
   // Stable EventKit identifier for calendar-sourced events; lets other devices reconcile the same occurrence.
   @IsOptional()
